@@ -1,0 +1,18 @@
+https://wiki.infomir.eu/eng/set-top-box/for-developers/stb-linux-webkit/api-stb-application-development/examples-of-using-api-functions
+
+// network status global flag
+var CURRENT_NETWORK_STATE = false;
+ 
+setInterval(function(){
+	var lan   = gSTB.GetLanLinkStatus(),
+		wifi  = gSTB.GetWifiLinkStatus(),
+		state = lan || wifi;
+	// connection check
+	if ( CURRENT_NETWORK_STATE !== state && state ) {
+		// the network appeared
+		CURRENT_NETWORK_STATE = true;
+		
+		// run video ...
+		
+	}
+}, 5000);

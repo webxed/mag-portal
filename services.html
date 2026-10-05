@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type="text/javascript">
+// Простейший пример сервисной страницы MAG: один поток.
+// Подробный портал (конфиг потоков + логи) — в ai_config/.
+//
+// Совместимость: браузер старых MAG (QtWebKit) — уровень ES3,
+// поэтому только var, без const/let и стрелочных функций.
+var stb;
+var stbEvent = { onEvent: function (data) {}, event: 0 };
+
+var STREAM = 'http://192.168.1.200:8080/hls/example-tv/index.m3u8';
+
+function init() {
+    stb = gSTB;
+    stb.InitPlayer();
+    stb.SetStereoMode(0); // 0 — стерео, 1 — моно
+    stb.SetVolume(80);
+    stb.Play(STREAM);
+
+    // Раз в минуту перезапускаем поток при обрыве (события 1 и 5).
+    setInterval(checkStatus, 60 * 1000);
+}
+
+function checkStatus() {
+    if (stbEvent.event == 1 || stbEvent.event == 5) {
+        stb.Play(STREAM);
+    }
+}
+</script>
+</head>
+<body onload="init()">
+</body>
+</html>

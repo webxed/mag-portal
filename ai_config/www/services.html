@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type="text/javascript">
+// ШАБЛОН портала MAG250. НЕ редактировать вручную — собирается скриптом
+// tools/build_portal.py в ai_config/services.html (и копируется в www).
+// Адрес сервера берётся из ai_config/www/config.php при сборке (tools/build_portal.py).
+//
+// Компактный портал MAG250.
+// ВАЖНО (проверено на fw7105): именно компактная обвязка воспроизводит RTMP
+// (buff=100, pos растёт). «Тяжёлый» портал с шимами/лог-модулем/множеством
+// таймеров поток НЕ удерживает (buff кратко ~40-100 → 0). Также HLS на этой
+// прошивке не декодируется (buff=0, pos=0) — использовать RTMP.
+// Проверенный паттерн: stb=gSTB; InitPlayer(); SetStereoMode(0); затем
+// (после паузы) SetVolume() -> Play() ПРЯМЫМИ вызовами stb.*.
+var stb;
+var stbEvent = { onEvent: function () {}, event: 0 };
+var MAC = '';
+var STREAM = '';
+var ID = '';
+var MUTE = false;
+var CFG_URL = 'http://192.168.1.100:8088/settings.json';
+var LOG_URL = 'http://192.168.1.100:8088/log.php';
+var TOKEN = 'change-me';
+
+function log(m) {
+    try {
+        var x = new XMLHttpRequest();
+        x.open('GET', LOG_URL + '?token=' + TOKEN + '&device=' + encodeURIComponent(MAC || 'unknown') + '&data=' + encodeURIComponent(m), true);
+        x.send(null);
+    } catch (e) {}
+}
+window.onerror = function (m, u, l) { log('JSERR: ' + m + ' @' + l); return true; };
+
+function init() {
+    stb = gSTB;
+    stb.InitPlayer();
+    stb.SetStereoMode(0);
+    try { MAC = String(stb.GetDeviceMacAddress()).toUpperCase(); } catch (e) { log('mac err ' + e); }
+    log('=== portal start, mac=' + MAC);
+
+    var x = new XMLHttpRequest();
+    x.onreadystatechange = function () {
+        if (x.readyState != 4) return;
+        if (x.status != 200) { log('cfg http ' + x.status); return; }
+        try { pick(JSON.parse(x.responseText)); } catch (e) { log('cfg parse err ' + e); }
+    };
+    try { x.open('GET', CFG_URL, true); x.send(null); } catch (e) { log('cfg xhr err ' + e); }
+
+    setInterval(function () {
+        var p, b, s;
+        try { p = stb.IsPlaying(); } catch (e) { p = 'e'; }
+        try { b = stb.GetBufferLoad(); } catch (e) { b = 'e'; }
+        try { s = stb.GetPosTime(); } catch (e) { s = 'e'; }
+        log('HEARTBEAT playing=' + (p === true ? 'yes' : 'no') + ' stream=' + (ID || '-') +
+            ' mute=' + (MUTE ? 'yes' : 'no') + ' buff=' + b + ' pos=' + s + ' url=' + STREAM);
+    }, 30000);
+}
+
+function pick(c) {
+    var id = (c.mac && c.mac[MAC]) ? c.mac[MAC] : c['default'];
+    var url = (c.streams && c.streams[id]) ? c.streams[id] : '';
+    if (!url) { log('no url for id=' + id); return; }
+    ID = id; STREAM = url;
+    MUTE = !!(c.mute && c.mute[MAC]);
+    log('stream ' + id + ' -> ' + url + ' mute=' + MUTE);
+    setTimeout(function () {
+        stb.SetVolume(MUTE ? 0 : 80);
+        stb.Play(STREAM);
+        log('PLAY ' + STREAM);
+    }, 1200);
+}
+</script>
+</head>
+<body onload="init()"></body>
+</html>

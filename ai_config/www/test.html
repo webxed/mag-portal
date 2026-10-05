@@ -1,0 +1,27 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type="text/javascript">
+function report(msg) {
+    try {
+        var x = new XMLHttpRequest();
+        x.open('GET', '/log.php?token=change-me&device=minitest&data=' + encodeURIComponent(msg), true);
+        x.send(null);
+    } catch (e) {}
+}
+window.onerror = function (m, u, l) { report('JSERR: ' + m + ' @line ' + l); return true; };
+function go() {
+    var info = 'JS_RUNS';
+    info += ' gSTB=' + (typeof gSTB);
+    info += ' JSON=' + (typeof JSON);
+    info += ' XHR=' + (typeof XMLHttpRequest);
+    try { info += ' mac=' + (gSTB.GetDeviceMacAddress ? 'fn_ok' : 'no_fn'); } catch (e) { info += ' mac=err'; }
+    try { info += ' isPlaying=' + gSTB.IsPlaying(); } catch (e) { info += ' isPlaying=err'; }
+    report(info);
+}
+</script>
+</head>
+<body onload="go()">
+<div id="out">minitest</div>
+</body>
+</html>
