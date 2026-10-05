@@ -139,8 +139,8 @@ ping, mute, логи:
 
 ## Авторы
 
-- markovskiy.pavel
-- deepseek 4.1
+- **markovskiy.pavel** — [webxed@gmail.com](mailto:webxed@gmail.com), Telegram: [@exedd](https://t.me/exedd)
+- **[deepseek 4.1](https://www.deepseek.com/)** — AI-ассистент (разработка, документация)
 
 ## Лицензия
 
