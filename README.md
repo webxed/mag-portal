@@ -10,7 +10,7 @@
 
 В репозиторий входят:
 
-- **портал** (`ai_config/`) — шаблон + собранная страница, конфиг потоков;
+- **портал** (`ai_config/`) — шаблон + собранная страница;
 - **панель управления** (`ai_config/www/`) — PHP-панель, приёмник логов, раздача
   `settings.json`;
 - **инструменты** (`tools/`) — деплой на приставки по SSH, сбор данных, проверка
@@ -22,8 +22,7 @@
 |------|-----------|
 | `ai_config/portal.template.html` | Шаблон портала (плейсхолдер `__SERVER_BASE__`) |
 | `ai_config/services.html` | Собранный портал (кладётся на приставку) |
-| `ai_config/settings.json` | Конфиг потоков и маппинг MAC → поток |
-| `ai_config/www/` | Docroot веб-сервера: панель, `log.php`, `settings.json`, `devices.json` |
+| `ai_config/www/` | Docroot веб-сервера: панель, `log.php`, **единый конфиг** `settings.json`, `devices.json` |
 | `tools/` | `build_portal.py`, `deploy_services.py`, `mag_ctl.py`, `check_playback.py`, `collect_*.py` |
 | `services.html` | Простейший пример сервисной страницы (один поток) |
 | `devices.txt` | Список устройств для py-скриптов |

@@ -30,7 +30,10 @@ python tools/deploy_services.py
 | Локально | Удалённо |
 |----------|----------|
 | `ai_config/services.html` | `/home/web/services.html` |
-| `ai_config/settings.json` | `/home/web/settings.json` |
+| `ai_config/www/settings.json` | `/home/web/settings.json` |
+
+`ai_config/www/settings.json` — **единый конфиг**: его генерирует панель из
+`ai_config/www/devices.json` и его же отдаёт приставкам веб-сервер (`GET /settings.json`).
 
 Перед перезаписью на устройстве создаётся `<файл>.bak`. После заливки выполняется `sync`.
 

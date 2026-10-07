@@ -10,12 +10,12 @@
     # 1) Проверить SSH-доступность всех устройств из devices.txt
     python tools/deploy_services.py --check
 
-    # 2) Залить services.html и settings.json в /home/default на все устройства
+    # 2) Залить services.html и settings.json в /home/web на все устройства
     python tools/deploy_services.py
 
     # 3) Один хост, один файл, своя удалённая папка
     python tools/deploy_services.py --hosts 192.168.1.10 \
-        --upload ai_config/services.html:/home/default/services.html
+        --upload ai_config/services.html:/home/web/services.html
 
     # 4) Без параллелизма и с доп. командой после заливки
     python tools/deploy_services.py --jobs 1 --cmd "sync" --cmd "date"
@@ -53,9 +53,11 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Заливки по умолчанию: (локальный путь, удалённый путь)
 # На MAG250 портал лежит в /home/web (проверено на тестовой приставке).
+# Конфиг — ЕДИНЫЙ файл ai_config/www/settings.json: его генерирует панель из
+# devices.json (ai_config/www/) и его же отдаёт приставкам веб-сервер (GET /settings.json).
 DEFAULT_UPLOADS: Sequence[Tuple[str, str]] = (
     ("ai_config/services.html", "/home/web/services.html"),
-    ("ai_config/settings.json", "/home/web/settings.json"),
+    ("ai_config/www/settings.json", "/home/web/settings.json"),
 )
 
 DEFAULT_DEVICES = "devices.txt"

@@ -38,7 +38,8 @@ except ImportError:  # pragma: no cover
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DEVICES = "devices.txt"
-DEFAULT_SETTINGS = "ai_config/settings.json"
+# Конфиг — единый файл панели (генерируется из ai_config/www/devices.json).
+DEFAULT_SETTINGS = "ai_config/www/settings.json"
 DEFAULT_DB = "data/mag.db"
 DEFAULT_USER = "root"
 DEFAULT_PASSWORD = os.environ.get("MAG_PASSWORD", "")

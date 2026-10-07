@@ -12,8 +12,8 @@ JavaScript-API приставки (`gSTB` + модульные `stbPlayer`/`stbE
 
 | Путь | Назначение |
 |------|-----------|
-| `ai_config/` | **Актуальный портал**: `services.html`, `settings.json`, `log.php` |
-| `ai_config/www/` | Docroot тестового веб-сервера: **панель управления** (`index.php`, `logs.php`, `lib.php`, `devices.json`), `log.php`, `settings.json`, `mag_logs/` |
+| `ai_config/` | **Актуальный портал**: `portal.template.html`, `services.html`, `log.php` |
+| `ai_config/www/` | Docroot веб-сервера: **панель управления** (`index.php`, `logs.php`, `lib.php`, `devices.json`), **единый конфиг** `settings.json`, `log.php`, `mag_logs/` |
 | `tools/` | `deploy_services.py` (+ `requirements.txt`, `README.md`) — деплой на приставки |
 | `devices.txt` | Список устройств для деплоя (по строке на хост) |
 | `network_devices.md` | Пример инвентаря: IP / MAC / VLAN |
@@ -48,7 +48,7 @@ JavaScript-API приставки (`gSTB` + модульные `stbPlayer`/`stbE
 - На приставку заливается компактный `ai_config/services.html` (см. раздел
   «Воспроизведение на MAG250»); конфиг и логи берёт с ПК (`http://192.168.1.100:8088`).
   Подтверждено: `HEARTBEAT playing=yes buff=100 pos` растёт (RTMP).
-- MAC устройств прописаны в `settings.json`.
+- MAC устройств прописаны в `devices.json` (потоки `dev_<MAC>`).
 - Данные о прошивках собираются в `network_devices.md` (`tools/collect_devices.py`).
 
 ## Воспроизведение на MAG250 (fw 7105) — важные выводы
@@ -160,6 +160,7 @@ php -S 192.168.1.100:8088 -t ai_config/www
 
 ## Что считать источником истины
 
-- Потоки и маппинг MAC/IP — `ai_config/settings.json` (+ копия на устройстве).
+- Потоки и маппинг MAC/IP — `ai_config/www/devices.json` (источник) → из него генерируется
+  единый `ai_config/www/settings.json` (+ копия на устройстве). Отдельного `ai_config/settings.json` нет.
 - Список устройств для деплоя — `devices.txt`.
 - Инвентарь/сеть — `network_devices.md`.
