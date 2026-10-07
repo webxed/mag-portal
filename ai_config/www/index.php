@@ -47,9 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'enabled'  => !empty($_POST['enabled'][$i]),
             ];
         }
-        devices_save($new);
-        settings_generate($new);
-        $flash = 'Сохранено. settings.json перегенерирован.';
+        // Защита от случайного стирания: если в форме не оказалось ни одной
+        // строки устройств, а список уже есть — не перезаписываем devices.json.
+        $existing = devices_load();
+        if ($n === 0 && count($existing['devices'] ?? []) > 0) {
+            $flash = 'Форма пуста — devices.json НЕ изменён (защита от случайной перезаписи).';
+        } else {
+            devices_save($new);
+            settings_generate($new);
+            $flash = 'Сохранено. settings.json перегенерирован.';
+        }
 
     } elseif ($action === 'regen') {
         settings_generate(devices_load());
@@ -182,11 +189,9 @@ $token    = csrf_token();
 <?php if ($output !== ''): ?><pre class="out"><?= h($output) ?></pre><?php endif; ?>
 
 <div class="bar">
-  <form method="post" style="display:inline">
-    <input type="hidden" name="csrf" value="<?= h($token) ?>">
-    <input type="hidden" name="action" value="save">
-    <button class="primary" type="submit">Сохранить</button>
-  </form>
+  <!-- Кнопка привязана к форме saveform (form="saveform") — там есть строки устройств.
+       Раньше это была отдельная форма без полей ip[], и её отправка затирала devices.json. -->
+  <button class="primary" type="submit" form="saveform">Сохранить</button>
   <form method="post" style="display:inline">
     <input type="hidden" name="csrf" value="<?= h($token) ?>">
     <input type="hidden" name="action" value="regen">

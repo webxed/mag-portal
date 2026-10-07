@@ -56,9 +56,12 @@ function devices_load(): array
     return $data;
 }
 
-/** Сохраняет devices.json. */
+/** Сохраняет devices.json (предыдущая версия — в devices.json.bak). */
 function devices_save(array $data): void
 {
+    if (is_file(PANEL_DEVICES)) {
+        @copy(PANEL_DEVICES, PANEL_DEVICES . '.bak');
+    }
     file_put_contents(
         PANEL_DEVICES,
         json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n"
@@ -68,11 +71,12 @@ function devices_save(array $data): void
 /** Идентификатор потока для устройства (по MAC, иначе по IP). */
 function device_stream_id(array $dev): string
 {
-    $key = $dev['mac'] ?? '';
+    $key = (string) ($dev['mac'] ?? '');
     if ($key === '') {
-        $key = $dev['ip'] ?? '';
+        $key = (string) ($dev['ip'] ?? '');
     }
-    return 'dev_' . preg_replace('/[^A-Za-z0-9]/', '', $key);
+    // MAC нормализуем в верхний регистр, чтобы id не зависел от регистра в devices.json.
+    return 'dev_' . preg_replace('/[^A-Za-z0-9]/', '', strtoupper($key));
 }
 
 /**
@@ -133,6 +137,9 @@ function settings_generate(array $data): array
         'fade_duration_ms' => $cur['fade_duration_ms'] ?? $def['fade_duration_ms'],
     ];
 
+    if (is_file(PANEL_SETTINGS)) {
+        @copy(PANEL_SETTINGS, PANEL_SETTINGS . '.bak');
+    }
     file_put_contents(
         PANEL_SETTINGS,
         json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n"
